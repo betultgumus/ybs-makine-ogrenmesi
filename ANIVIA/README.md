@@ -183,120 +183,49 @@ Veri seti 19,936 kayıt ve 11 sütundan oluşmaktadır. Eksik veriler strategik 
 
 **En İyi Parametreler:**
 ```python
-n_estimators: 250
-max_depth: 6
-learning_rate: 0.05
-subsample: 0.8
-colsample_bytree: 0.75
+n_estimators: 500
+max_depth: 9
+learning_rate: 0.01
+subsample: 0.7
+colsample_bytree: 0.8
 ```
 
 ### 📊 Model Performans Metrikleri
 
 | Metrik | Train | Test | Açıklama |
 |--------|-------|------|----------|
-| **R² Skoru** | 0.71 | 0.673 | Model, varyansın %67'sini açıklıyor |
-| **RMSE** | $6.24 | $7.18 | Ortalama tahmin hatası ~$7.18 |
-| **MAE** | $3.89 | $4.52 | Medyan mutlak hata ~$4.52 |
+| **R² Skoru** | 0.62 | 0.58 | Model, varyansın %62'sini açıklıyor |
+
 
 ### 🎯 Özellik Önemi (Feature Importance - Top 10)
 
-| Sıra | Özellik | Önem (%) |
-|-----|---------|----------|
-| 1 | **platform** | 18.3 |
-| 2 | **oyun_turu_sayisi** | 14.2 |
-| 3 | **puan_durumu_Yüksek** | 12.7 |
-| 4 | **yas** | 11.4 |
-| 5 | **gelistirici_Sony** | 8.5 |
-| 6-10 | Diğer değişkenler | 34.9 |
+| Sıra | Özellik | 
+|-----|---------|
+| 1 | **platform_nintendo** | 
+| 2 | **platform_ps** | 
+| 3 | **cihaz_turu_pc** | 
+| 4 | **tek_oyunculu** | 
+| 5 | **platform_steam** | 
+| 6 | **ingilizce_destegi** | 
 
 ---
 
 ## 6. Sonuç ve İş Bulguları
 
-### 💡 Temel Sonuçlar
-
-1. **Platform Kararı Başlıbaşlarına Önemli**
-   - Nintendo oyunları ortalama **2.8x** daha pahalı
-   - Steam indie oyunları ortalama **3.5x** daha ucuz
-
-2. **Kalite Primli Fiyatlandırma Etkili**
-   - Yüksek puanlı oyunlar ortalama **40% daha pahalı**
-   - R² = 0.31 korelasyon - güçlü ilişki
-
-3. **Yaş Grubu Segmentasyonu Kritik**
-   - 18+ kategorisi en geniş (%45 oyun) ama en düşük fiyat birlikteliği
-   - 10-12 yaş: en yüksek medyan fiyat
-
-4. **Dil Desteği Paradoksu**
-   - Çok dilli oyunlar daha pahalı AMA Türkçe spesifik negatif korelasyon
-
-5. **Konsol vs PC Stratejisi**
-   - Konsol oyunları medyan %150 daha pahalı
-
 ### 🎯 İş Stratejileri Önerileri
 
 #### **Geliştiriciler için:**
 1. **Platformları Seçici Kullan**: Nintendo exclusive'leri premium fiyatlandırsın
-2. **Kaliteyi Vurgula**: Puanlanan oyunlar %40 fiyat premium alabilir
+2. **Kaliteyi Vurgula**: Puanlanan oyunlarda daha yüksek.
 3. **Dil Desteği Dengele**: Daha fazla dil = daha geniş pazaar ama fiyat düşme riski
-4. **Yaş Grubu Odaklı**: 10-12 yaş oyunları daha yüksek fiyat toleransına sahip
+4. **Yaş Grubu Odaklı**: +18 gibi oyunlarda sunulan fiyat daha yüksek.
 
 #### **Yayınlayıcılar için:**
-1. **Portföy Risk Yönetimi**: Konsol ryarışması daha kârlı ama riskli
+1. **Portföy Risk Yönetimi**: Konsol yarışması daha kârlı ama riskli
 2. **Indie Aksesibilitesi**: Steam indie'ler büyük hacim ancak düşük margin
 3. **Segmentasyon**: Her tür için farklı fiyatlandırma stratejisi gerekli
 
 ---
-
-## 📚 Teknoloji Yığını
-
-```python
-# Data Processing
-pandas==1.3.5        # Veri manipülasyonu
-numpy==1.21.6        # Numerik hesaplamalar
-
-# Visualization
-plotly==5.6.0        # İnteraktif grafikler
-matplotlib==3.5.1    # Statik grafikler
-seaborn==0.11.2      # İstatistiksel visualizasyon
-
-# Machine Learning
-scikit-learn==1.0.2  # ML algoritmaları
-xgboost==1.5.2       # XGBoost regresyonu
-lazypredict==0.2.12  # Model seçimi otomasyonu
-```
-
----
-
-## 📂 Proje Yapısı
-
-```
-ANIVIA/
-├── README.md                          # Bu dosya
-├── anivia.ipynb                       # Ana analiz notebook
-├── anivia_temiz_data.csv              # Temizlenmiş veri seti
-├── 
-├── web-scraping-data/                 # Orijinal kaynak veriler
-│   ├── steam.csv
-│   ├── epicveri1.csv
-│   ├── NINTENDO.csv
-│   ├── PSVERİ1SONHALİ.csv
-│   └── XBOX_TUM_OYUNLAR.csv
-│
-└── figures/                           # Görselleştirme çıktıları
-    ├── yas_barchart_pie_plotly.html
-    ├── platform_barchart_pie_plotly.html
-    ├── cihaz_turu_barchart_pie_plotly.html
-    ├── puan_durumu_barchart_pie_plotly.html
-    ├── dil_destegi_pasta_yanyana_plotly.html
-    ├── platform_fiyat_boxplot_plotly.html
-    ├── eksik_deger_yuzde_barh.png
-    ├── pairplot_sayisal_degiskenler.png
-    ├── dil_fiyat_analiz_4subplot.png
-    ├── korelasyon_matrisi_heatmap.png
-    └── [Ek grafikler...]
-```
-
 ---
 
 **© 2026 ANIVIA Projesi | Tüm Hakları Saklıdır**
