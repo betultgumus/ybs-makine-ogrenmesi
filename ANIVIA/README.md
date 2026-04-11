@@ -117,47 +117,6 @@ Veri seti 19,936 kayıt ve 11 sütundan oluşmaktadır. Eksik veriler strategik 
 
 ---
 
-## 4. Keşifçi Veri Analizi (EDA) ve Görselleştirmeler
-
-### 📈 Tekli Değişken Analizi
-
-#### **Fiyat Dağılımı**
-- **İstatistikler:** Min: $0 | Q1: $4.99 | Medyan: $9.99 | Q3: $19.99 | Max: $99.99
-- **Şekli:** Sağa çarpık (right-skewed) - çoğunluk düşük fiyatlıdır
-- **Aykırı Değerler:** IQR yöntemiyle 324 aykırı değer tespit edildi
-
-#### **Dil Sayısı Dağılımı**
-- **Ortalama:** 2.3 dil/oyun
-- **Medyan:** 2 dil
-- **Sınırlar:** Minimum 1, Maksimum 40+
-
-#### **Platform Dağılımı**
-- PlayStation: 5,432 oyun (27.8%)
-- Steam: 9,847 oyun (50.3%)
-- Epic Games: 2,156 oyun (11.0%)
-- Nintendo: 2,301 oyun (11.8%)
-- Xbox: 200 oyun (1.0%, kısmi veri)
-
-### 🔗 İkili Değişken Analizi
-
-#### **Platform - Fiyat İlişkisi**
-
-**Bulgular:**
-- **Nintendo** oyunları en pahalı (Medyan: $39.99)
-- **PlayStation** oyunları orta segment (Medyan: $14.99)
-- **Steam & Epic** oyunları daha ucuz (Medyan: $9.99-$12.99)
-
-#### **Yaş Grubu - Fiyat İlişkisi**
-
-| Yaş Grubu | Medyan Fiyat | Oyun Sayısı |
-|-----------|-------------|------------|
-| **3** | $4.99 | 3,200 |
-| **10** | $14.99 | 2,100 |
-| **12** | $19.99 | 3,450 |
-| **18** | $12.99 | 8,829 |
-
-**Anahtar Bulgu:** Yaş grubu arttıkça fiyat da artmakta (korelasyon: 0.27)
-
 #### **Dil Desteği Analizi**
 
 - **Türkçe Desteği:** Negatif korelasyon (-0.13) - Türkçe oyunlar daha düşük fiyatlı
@@ -175,7 +134,7 @@ Veri seti 19,936 kayıt ve 11 sütundan oluşmaktadır. Eksik veriler strategik 
 
 ---
 
-## 5. Model Başarı Değerlendirmesi
+## 4. Model Başarı Değerlendirmesi
 
 ### 🤖 Kullanılan Algoritmalar
 
@@ -210,14 +169,14 @@ colsample_bytree: 0.8
 
 ---
 
-## 6. Sonuç ve İş Bulguları
+## 5. Sonuç ve İş Bulguları
 
 ### 🎯 İş Stratejileri Önerileri
 
 #### **Geliştiriciler için:**
 1. **Platformları Seçici Kullan**: Nintendo exclusive'leri premium fiyatlandırsın
 2. **Kaliteyi Vurgula**: Puanlanan oyunlarda daha yüksek.
-3. **Dil Desteği Dengele**: Daha fazla dil = daha geniş pazaar ama fiyat düşme riski
+3. **Dil Desteği Dengele**: Daha fazla dil = daha geniş pazar ama fiyat düşme riski
 4. **Yaş Grubu Odaklı**: +18 gibi oyunlarda sunulan fiyat daha yüksek.
 
 #### **Yayınlayıcılar için:**
@@ -226,8 +185,4 @@ colsample_bytree: 0.8
 3. **Segmentasyon**: Her tür için farklı fiyatlandırma stratejisi gerekli
 
 ---
----
-
-**© 2026 ANIVIA Projesi | Tüm Hakları Saklıdır**
-
 
