@@ -66,3 +66,47 @@ h1, h2, h3 {
     transform: translate(1px, 1px);
     box-shadow: 1px 1px 0px #000;
 }
+
+/* ===== SOL SIDEBAR MENÜ ÖZELLEŞTİRMESİ ===== */
+/* Sol taraftaki yerleşik menü listesini hedefle */
+[data-testid="stSidebarNav"] ul {
+    padding-top: 20px !important;
+}
+
+/* Her bir menü linkini şık bir kutuya dönüştür */
+[data-testid="stSidebarNav"] ul li a {
+    background-color: #EBF3FA !important;
+    border: 2px solid #D4AF37 !important;
+    border-radius: 6px !important;
+    padding: 10px 15px !important;
+    margin-bottom: 10px !important;
+    color: #0a0f2c !important;
+    font-family: 'Press Start 2P', cursive !important;
+    font-size: 6px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    text-decoration: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Üzerine gelindiğinde (Hover efekt) renkleri janti şekilde değiştir */
+[data-testid="stSidebarNav"] ul li a:hover {
+    background-color: #D4AF37 !important;
+    color: white !important;
+    transform: scale(1.03);
+}
+
+/* Aktif seçili olan sayfayı daha belirgin yap */
+[data-testid="stSidebarNav"] ul li[data-selected="true"] a {
+    background-color: #1E3A8A !important;
+    color: white !important;
+    border-color: #D4AF37 !important;
+}
+
+/* Streamlit'in ikon SVG'lerini gizle */
+[data-testid="stSidebarNav"] ul li a svg {
+    display: none !important;
+}
