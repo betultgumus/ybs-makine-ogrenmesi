@@ -41,7 +41,7 @@ except Exception as e:
     df_oyuncular = pd.DataFrame()
 
 # Scaler ve Model Yükleme
-scaler_path = Path(__file__).parent.parent.parent / "models" / "anivia_oyuncu_persona.pkl"
+scaler_path = Path(__file__).parent.parent.parent / "models" / "anivia_persona_classification.pkl"
 
 scaler = None
 try:
