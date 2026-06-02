@@ -165,109 +165,118 @@ if model_loaded and scaler_loaded and not df_oyunlar.empty:
     col_pred1, col_pred2, col_pred3 = st.columns(3)
     
     with col_pred1:
-        pred_platform = st.selectbox("📱 Platform Seç:", 
-                                     ["Appstore", "Playstore", "Steam", "Epic Games", "Nintendo", "PlayStation", "Xbox"],
-                                     key="pred_platform")
+        pred_fiyat = st.number_input("💰 Fiyat (USD):", 
+                                     min_value=0.0, 
+                                     max_value=1000.0, 
+                                     value=0.0, 
+                                     step=0.01,
+                                     key="pred_fiyat")
     
     with col_pred2:
-        pred_kategori = st.selectbox("🎮 Kategori Seç:", 
-                                     sorted(df_oyunlar['kategori'].dropna().unique()),
-                                     key="pred_kategori")
+        pred_platform = st.selectbox("📱 Platform Seç:", 
+                                     ["Seçiniz", "Appstore", "Playstore", "Steam", "Epic Games", "Nintendo", "PlayStation", "Xbox"],
+                                     key="pred_platform")
     
     with col_pred3:
-        pred_yas = st.selectbox("👶 Yaş Sınırı (PEGI) Seç:", 
-                                sorted(df_oyunlar['yas_siniri'].dropna().unique()),
-                                key="pred_yas")
+        pred_cihaz = st.selectbox("🖥️ Cihaz Türü Seç:", 
+                                  ["Seçiniz", "Mobil Cihaz", "Kişisel Bilgisayar", "Konsol"],
+                                  key="pred_cihaz")
     
     # Tahmin Butonu
     if st.button("🔍 Riski Analiz Et", use_container_width=True):
-        try:
-            # ===== VERİ HAZIRLANMA =====
-            
-            # Kullanıcının seçtiği girdilerden ham bir DataFrame oluştur
-            girdi_df = pd.DataFrame([{
-                'fiyat': 0.0,
-                'platform': pred_platform,
-                'cihaz_turu': 'Telefon',
-                'kategori': pred_kategori,
-                'yas_siniri': int(pred_yas)
-            }])
-            
-            # One-Hot Encoding uygula
-            girdi_encoded = pd.get_dummies(girdi_df)
-            
-            # SCALER HİZALAMA (Kesin Çözüm)
-            scaler_cols = scaler.feature_names_in_
-            
-            # Eksik sütunları 0 ile oluştur
-            for col in scaler_cols:
-                if col not in girdi_encoded.columns:
-                    girdi_encoded[col] = 0
-            
-            # Sütunların sırasını TAM OLARAK scaler'ın beklediği sıraya getir
-            girdi_encoded = girdi_encoded[scaler_cols]
-            
-            # Transform
-            X_scaled = scaler.transform(girdi_encoded)
-            
-            # Tahmin
-            prediction = risk_model.predict(X_scaled)[0]
-            probability = risk_model.predict_proba(X_scaled)[0]
-            
-            guvenli_olasiligi = probability[0] * 100
-            tehlikeli_olasiligi = probability[1] * 100
-            
-            # ===== SONUÇ GÖSTER =====
-            if prediction == 1:
-                # TEHLİKELİ
-                st.markdown(f"""
-                <div style="background: linear-gradient(135deg, #DC2626 0%, {COLOR_GOLD} 100%); 
-                            padding: 30px; border-radius: 10px; border: 3px solid {COLOR_GOLD};
-                            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5); margin-top: 20px;">
-                    <h3 style="color: white; text-align: center; margin-top: 0;">⚠️ TEHLİKELİ OYUN</h3>
-                    <p style="color: white; text-align: center; font-size: 16px; margin: 10px 0;">
-                        <strong>Platform:</strong> {pred_platform}<br>
-                        <strong>Kategori:</strong> {pred_kategori}<br>
-                        <strong>PEGI Sınırı:</strong> {pred_yas}+
-                    </p>
-                    <div style="background-color: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 5px; margin-top: 15px;">
-                        <p style="color: white; text-align: center; font-size: 14px; margin: 0;">
-                            <strong>Güvenli Olma Olasılığı:</strong> {guvenli_olasiligi:.1f}%<br>
-                            <strong>Tehlikeli Olma Olasılığı:</strong> {tehlikeli_olasiligi:.1f}%
+        # ===== DOĞRULAMA =====
+        if pred_platform == "Seçiniz":
+            st.warning("⚠️ Lütfen Platform seçiniz!")
+        elif pred_cihaz == "Seçiniz":
+            st.warning("⚠️ Lütfen Cihaz Türü seçiniz!")
+        elif pred_fiyat < 0:
+            st.warning("⚠️ Fiyat negatif olamaz! (0 = Ücretsiz oyun)")
+        else:
+            try:
+                # ===== VERİ HAZIRLANMA =====
+                
+                # Kullanıcının seçtiği girdilerden ham bir DataFrame oluştur
+                girdi_df = pd.DataFrame([{
+                    'fiyat': pred_fiyat,
+                    'platform': pred_platform,
+                    'cihaz_turu': pred_cihaz
+                }])
+                
+                # One-Hot Encoding uygula
+                girdi_encoded = pd.get_dummies(girdi_df)
+                
+                # SCALER HİZALAMA (Kesin Çözüm)
+                scaler_cols = scaler.feature_names_in_
+                
+                # Eksik sütunları 0 ile oluştur
+                for col in scaler_cols:
+                    if col not in girdi_encoded.columns:
+                        girdi_encoded[col] = 0
+                
+                # Sütunların sırasını TAM OLARAK scaler'ın beklediği sıraya getir
+                girdi_encoded = girdi_encoded[scaler_cols]
+                
+                # Transform
+                X_scaled = scaler.transform(girdi_encoded)
+                
+                # Tahmin
+                prediction = risk_model.predict(X_scaled)[0]
+                probability = risk_model.predict_proba(X_scaled)[0]
+                
+                guvenli_olasiligi = probability[0] * 100
+                tehlikeli_olasiligi = probability[1] * 100
+                
+                # ===== SONUÇ GÖSTER =====
+                if prediction == 1:
+                    # TEHLİKELİ
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, #DC2626 0%, {COLOR_GOLD} 100%); 
+                                padding: 30px; border-radius: 10px; border: 3px solid {COLOR_GOLD};
+                                box-shadow: 0 0 20px rgba(220, 38, 38, 0.5); margin-top: 20px;">
+                        <h3 style="color: white; text-align: center; margin-top: 0;">⚠️ TEHLİKELİ OYUN</h3>
+                        <p style="color: white; text-align: center; font-size: 16px; margin: 10px 0;">
+                            <strong>Fiyat:</strong> ${pred_fiyat:.2f}<br>
+                            <strong>Platform:</strong> {pred_platform}<br>
+                            <strong>Cihaz Türü:</strong> {pred_cihaz}
+                        </p>
+                        <div style="background-color: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 5px; margin-top: 15px;">
+                            <p style="color: white; text-align: center; font-size: 14px; margin: 0;">
+                                <strong>Güvenli Olma Olasılığı:</strong> {guvenli_olasiligi:.1f}%<br>
+                                <strong>Tehlikeli Olma Olasılığı:</strong> {tehlikeli_olasiligi:.1f}%
+                            </p>
+                        </div>
+                        <p style="color: white; text-align: center; font-size: 12px; margin-top: 15px; margin-bottom: 0;">
+                            ⚠️ Bu oyun, çocuklar için potansiyel risk taşıyabilir. Velilerin dikkatli incelemesi önerilir.
                         </p>
                     </div>
-                    <p style="color: white; text-align: center; font-size: 12px; margin-top: 15px; margin-bottom: 0;">
-                        ⚠️ Bu oyun, çocuklar için potansiyel risk taşıyabilir. Velilerin dikkatli incelemesi önerilir.
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                # GÜVENLI
-                st.markdown(f"""
-                <div style="background: linear-gradient(135deg, {COLOR_DARK_BLUE} 0%, {COLOR_LIGHT_BLUE} 100%); 
-                            padding: 30px; border-radius: 10px; border: 3px solid {COLOR_GOLD};
-                            box-shadow: 0 0 20px rgba(30, 58, 138, 0.5); margin-top: 20px;">
-                    <h3 style="color: white; text-align: center; margin-top: 0;">✅ GÜVENLI OYUN</h3>
-                    <p style="color: white; text-align: center; font-size: 16px; margin: 10px 0;">
-                        <strong>Platform:</strong> {pred_platform}<br>
-                        <strong>Kategori:</strong> {pred_kategori}<br>
-                        <strong>PEGI Sınırı:</strong> {pred_yas}+
-                    </p>
-                    <div style="background-color: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 5px; margin-top: 15px;">
-                        <p style="color: white; text-align: center; font-size: 14px; margin: 0;">
-                            <strong>Güvenli Olma Olasılığı:</strong> {guvenli_olasiligi:.1f}%<br>
-                            <strong>Tehlikeli Olma Olasılığı:</strong> {tehlikeli_olasiligi:.1f}%
+                    """, unsafe_allow_html=True)
+                else:
+                    # GÜVENLI
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, {COLOR_DARK_BLUE} 0%, {COLOR_LIGHT_BLUE} 100%); 
+                                padding: 30px; border-radius: 10px; border: 3px solid {COLOR_GOLD};
+                                box-shadow: 0 0 20px rgba(30, 58, 138, 0.5); margin-top: 20px;">
+                        <h3 style="color: white; text-align: center; margin-top: 0;">✅ GÜVENLI OYUN</h3>
+                        <p style="color: white; text-align: center; font-size: 16px; margin: 10px 0;">
+                            <strong>Fiyat:</strong> ${pred_fiyat:.2f}<br>
+                            <strong>Platform:</strong> {pred_platform}<br>
+                            <strong>Cihaz Türü:</strong> {pred_cihaz}
+                        </p>
+                        <div style="background-color: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 5px; margin-top: 15px;">
+                            <p style="color: white; text-align: center; font-size: 14px; margin: 0;">
+                                <strong>Güvenli Olma Olasılığı:</strong> {guvenli_olasiligi:.1f}%<br>
+                                <strong>Tehlikeli Olma Olasılığı:</strong> {tehlikeli_olasiligi:.1f}%
+                            </p>
+                        </div>
+                        <p style="color: white; text-align: center; font-size: 12px; margin-top: 15px; margin-bottom: 0;">
+                            ✨ Bu oyun, çocuklara yönelik güvenli bir seçim gibi görünüyor!
                         </p>
                     </div>
-                    <p style="color: white; text-align: center; font-size: 12px; margin-top: 15px; margin-bottom: 0;">
-                        ✨ Bu oyun, çocuklara yönelik güvenli bir seçim gibi görünüyor!
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        except Exception as e:
-            st.error(f"❌ HATA OLUŞTU:")
-            st.exception(e)
+                    """, unsafe_allow_html=True)
+            
+            except Exception as e:
+                st.error(f"❌ HATA OLUŞTU:")
+                st.exception(e)
 
 else:
     if not model_loaded or not scaler_loaded:
